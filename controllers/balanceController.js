@@ -16,6 +16,7 @@ const depositBalance = asyncHandler(async (req, res) =>{
       username : updatedUser.username,
       email: updatedUser.email,
       mylink : updatedUser.mylink,
+      referral_link : updatedUser.referral_link,
       balance : updatedUser.balance,
       role: updatedUser.role,
       avatar: updatedUser.avatar,
@@ -46,6 +47,7 @@ const withdrawBalance = asyncHandler(async (req, res) =>{
       username : updatedUser.username,
       email: updatedUser.email,
       mylink : updatedUser.mylink,
+      referral_link : updatedUser.referral_link,
       balance : updatedUser.balance,
       role: updatedUser.role,
       avatar: updatedUser.avatar,
@@ -76,6 +78,7 @@ const getStarted = asyncHandler(async (req, res) =>{
       username : updatedUser.username,
       email: updatedUser.email,
       mylink : updatedUser.mylink,
+      referral_link : updatedUser.referral_link,
       balance : updatedUser.balance,
       role: updatedUser.role,
       avatar: updatedUser.avatar,
@@ -110,6 +113,13 @@ const getRewards = asyncHandler(async (req, res) =>{
   const user = await User.findOne({ email });
 
   if (user) {
+
+    const child = await User.findOne({referral_link : user.mylink});
+
+    if(child) {
+      user.referral_link = child.mylink;
+    }
+
     if(user.cycle==1) user.balance = user.balance + 250;
     if(user.cycle==2) user.balance = user.balance + 275;
     
@@ -132,6 +142,7 @@ const getRewards = asyncHandler(async (req, res) =>{
       username : updatedUser.username,
       email: updatedUser.email,
       mylink : updatedUser.mylink,
+      referral_link : updatedUser.referral_link,
       balance : updatedUser.balance,
       role: updatedUser.role,
       avatar: updatedUser.avatar,

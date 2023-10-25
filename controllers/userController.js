@@ -23,6 +23,7 @@ const authUser = asyncHandler(async (req, res) => {
       username : user.username,
       email: user.email,
       mylink : user.mylink,
+      referral_link : user.referral_link,
       balance : user.balance,
       role: user.role,
       avatar: user.avatar,
@@ -52,6 +53,7 @@ const checkAuth = asyncHandler(async (req, res) => {
         username : userInfo.username,
         email: userInfo.email,
         mylink : userInfo.mylink,
+        referral_link : userInfo.referral_link,
         balance : userInfo.balance,
         role: userInfo.role,
         avatar: userInfo.avatar,
@@ -272,10 +274,17 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // @access  Private
 const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
+  const referral_link = req.body.referral_link;
+  const referral_user = await User.findOne({referral_link});
+  if(!referral_user) {
+    res.status(404);
+    throw new Error('Invalid Referral Link');
+  }
 
   if (user) {
     user.username = req.body.username || user.username;
     user.avatar = req.body.avatar || user.avatar;
+    user.referral_link =req.body.referral_link || user.referral_link;
 
     if (req.body.password) {
       if(await user.matchPassword(req.body.password)) {
@@ -293,6 +302,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       username : updatedUser.username,
       email: updatedUser.email,
       mylink : updatedUser.mylink,
+      referral_link : updatedUser.referral_link,
       balance : updatedUser.balance,
       role: updatedUser.role,
       avatar: updatedUser.avatar,
@@ -320,6 +330,7 @@ const upState = asyncHandler(async (req, res) => {
       username : updatedUser.username,
       email: updatedUser.email,
       mylink : updatedUser.mylink,
+      referral_link : updatedUser.referral_link,
       balance : updatedUser.balance,
       role: updatedUser.role,
       avatar: updatedUser.avatar,
