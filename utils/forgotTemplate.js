@@ -53,7 +53,7 @@ const forgotTemplate = (email) => {
         <p> Please use the verification code below to reset your password. This code will be valid only for 2 minutes.</p>
         <p class="verification-code">${process.env.FORGOT_CODE}</p>
         <p>If you have any questions, simply reply to this email. I’m here to help.</p>
-        <p>Regards,<br>Profit Team</p> 
+        <h4>Regards,<br>Profit Team</h4> 
     </div>
 </body>
 </html>
