@@ -47,19 +47,22 @@ const checkAuth = asyncHandler(async (req, res) => {
 
       const userInfo = await User.findById(decoded.userId).select('-password');
 
+
       if(userInfo) {
-      res.json({
-        _id: userInfo._id,
-        username : userInfo.username,
-        email: userInfo.email,
-        mylink : userInfo.mylink,
-        referral_link : userInfo.referral_link,
-        balance : userInfo.balance,
-        role: userInfo.role,
-        avatar: userInfo.avatar,
-        cycle : userInfo.cycle,
-        state : userInfo.state
-      });
+
+          res.json({
+            _id: userInfo._id,
+            username : userInfo.username,
+            email: userInfo.email,
+            mylink : userInfo.mylink,
+            referral_link : userInfo.referral_link,
+            balance : userInfo.balance,
+            role: userInfo.role,
+            avatar: userInfo.avatar,
+            cycle : userInfo.cycle,
+            state : userInfo.state
+          });
+
     }
 
     } catch (error) {
