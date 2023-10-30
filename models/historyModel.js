@@ -14,9 +14,9 @@ const historyModel = mongoose.Schema(
       type: String,
       default: "",
     },
-    date : {
-      type : String,
-      default : "",
+    approved : {
+      type : Boolean,
+      default : false,
     },
   },
   {

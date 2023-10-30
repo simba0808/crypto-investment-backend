@@ -3,15 +3,18 @@ import {
   authUser,
   registerUser,
   logoutUser,
-  // getUserProfile,
+  allUsers,
   mailHandler,
   remailHandler,
   updateUserProfile,
   checkAuth,
   upState,
   changePassword,
+  getDashboardInfo,
+  deleteUser,
 } from '../controllers/userController.js';
 import { protect } from '../middleware/authMiddleware.js';
+import { adminProtect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -23,6 +26,10 @@ router.post('/remail', remailHandler);
 router.post('/auth', authUser);
 router.post('/cycle', upState);
 router.post('/logout', logoutUser);
+router.get('/allusers', adminProtect, allUsers);
+router.get('/dashboard', adminProtect, getDashboardInfo);
+router.delete('/delete/:id', deleteUser),
+
 // router.put('/profile', protect ,updateUserProfile);
 router
   .route('/profile')
