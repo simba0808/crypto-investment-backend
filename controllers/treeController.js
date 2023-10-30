@@ -42,6 +42,7 @@ const findNodes = asyncHandler(async (email, cycle) => {
 const showTree = asyncHandler(async (req, res) =>{
   const { email, cycle } = req.body;
   
+
   let nodes= await findNodes(email, cycle);
   let node1 = nodes[0];
   let node2 = nodes[1];
@@ -52,7 +53,6 @@ const showTree = asyncHandler(async (req, res) =>{
   
   if (node1) {
      [ node11, node12 ]  = await findNodes(node1.email, cycle);
-
   }
   
   if (node2) {
@@ -85,6 +85,53 @@ const showTree = asyncHandler(async (req, res) =>{
   });
 });
 
+const getProgress = asyncHandler(async (email, cycle) =>{
+  
+  let nodes= await findNodes(email, cycle);
+  let node1 = nodes[0];
+  let node2 = nodes[1];
+  let node11 = {};
+  let node12 = {};
+  let node21 = {};
+  let node22 = {};
+  
+  if (node1) {
+     [ node11, node12 ]  = await findNodes(node1.email, cycle);
+  }
+  
+  if (node2) {
+     [ node21, node22 ]  = await findNodes(node2.email, cycle);
+  }
+
+  let i = 2;
+  if (nodes.length > 2) {
+    if (!node11 && i < nodes.length) {
+      node11 = nodes[i++];
+    }
+    if (!node12 && i < nodes.length) {
+      node12 = nodes[i++];
+    }
+    if (!node21 && i < nodes.length) {
+      node21 = nodes[i++];
+    }
+    if (!node22 && i < nodes.length) {
+      node22 = nodes[i++];
+    }
+  }
+
+  const list = ({
+    node1: node1 || {},
+    node2: node2 || {},
+    node11: node11 || {},
+    node12: node12 || {},
+    node21: node21 || {},
+    node22: node22 || {},
+  });
+
+  let percentage = (list.node1.email?1:0)*25 + (list.node2.email?1:0)*25 + (list.node11.email?1:0)*12.5 + (list.node12.email?1:0)*12.5 + (list.node21.email?1:0)*12.5 + (list.node22.email?1:0)*12.5;
+  return percentage;
+});
+
 export {
-  showTree
+  showTree, getProgress
 };

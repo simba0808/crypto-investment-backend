@@ -1,12 +1,24 @@
 import asyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
 import Tree from '../models/userTree.js';
+import History from '../models/historyModel.js'
+import { showBalance } from './historyController.js';
 
 const depositBalance = asyncHandler(async (req, res) =>{
   const { email, dAmount } = req.body;
   const user = await User.findOne({ email });
-  console.log("Pay: "+email+" : "+dAmount);
+
   if (user) {
+
+    const history = await History.create(
+      {
+       email : email, 
+       amount: dAmount,
+       method: 'deposit',
+      }
+    );
+    if(history) console.log('Deposit history added');
+
     user.balance = user.balance + parseInt(dAmount);
 
     const updatedUser = await user.save();
@@ -35,29 +47,61 @@ const withdrawBalance = asyncHandler(async (req, res) =>{
   const user = await User.findOne({ email });
 
   if (user) {
-    user.balance = user.balance - parseInt(wAmount);
+    // user.balance = user.balance - parseInt(wAmount);
 
-    if(user.balance<0) {
+    if(user.balance<parseInt(wAmount)) {
       res.status(400).json({message:"Insufficiant Balance!"});
     } else {
-    const updatedUser = await user.save();
+
+    const history = await History.create(
+      {
+        email : email, 
+        amount: wAmount,
+        method: 'withdraw',
+      }
+    );
+    if(history) console.log('Withdraw history added');
 
     res.json({
-      _id: updatedUser._id,
-      username : updatedUser.username,
-      email: updatedUser.email,
-      mylink : updatedUser.mylink,
-      referral_link : updatedUser.referral_link,
-      balance : updatedUser.balance,
-      role: updatedUser.role,
-      avatar: updatedUser.avatar,
-      cycle : updatedUser.cycle,
-      state : updatedUser.state,
+      _id: user._id,
+      username : user.username,
+      email: user.email,
+      mylink : user.mylink,
+      referral_link : user.referral_link,
+      balance : user.balance,
+      role: user.role,
+      avatar: user.avatar,
+      cycle : user.cycle,
+      state : user.state,
     });
   }
   } else {
     res.status(400).json({message:"Factal Error! Please try again."});
   }
+});
+
+const approveBalance = asyncHandler(async (req, res) =>{
+  const { _id, email } = req.body;
+  const history = await History.findById(_id);
+  if(!history.approved) {
+    history.approved = true;
+    const updatedHistory = await history.save();
+    if(updatedHistory) console.log('Balance Approved triggered!', updatedHistory.amount);
+    const user = await User.findOne({email : email});
+    if(user) {
+      user.balance = user.balance - updatedHistory.amount;
+      const updatedUser = await user.save();
+      if(updatedUser) {
+        showBalance(req, res);
+        console.log('Balance approved', updatedUser.balance);    
+      }
+    } else {
+      res.status(400).json({message:"System Error! Can't find user."});
+    }
+  } else {
+     res.status(400).json({message:"Fund is already approved."});
+  }
+
 });
 
 const getStarted = asyncHandler(async (req, res) =>{
@@ -162,4 +206,5 @@ export {
   getStarted,
   depositBalance,
   withdrawBalance,
+  approveBalance,
 };
