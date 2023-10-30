@@ -84,6 +84,18 @@ const allUsers = asyncHandler(async (req, res) => {
   }
 });
 
+const findUser = asyncHandler(async (req, res) => {
+  const {email} = req.body;
+  const users = await User.find({ email : email }).select('-password');
+
+  if (users) {
+    res.json(users);
+  } else {
+    res.status(401);
+    throw new Error('Database Error');
+  }
+});
+
 const registerUser = asyncHandler(async (req, res) => {
   const { username, email, code, password, referral_link, mylink } = req.body;
   const userExists = await User.findOne({ email });
@@ -255,6 +267,7 @@ const logoutUser = (req, res) => {
   });
   res.status(200).json({ message: 'Logged out' });
 };
+
 const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
   const referral_link = req.body.referral_link;
@@ -297,6 +310,37 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 });
+
+const updateAdminUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.body._id);
+
+  if (user) {
+    user.username = req.body.username || user.username;
+    user.avatar = req.body.avatar || user.avatar;
+    user.referral_link =req.body.referral_link || user.referral_link;
+    if(req.body.newPassword) user.password = req.body.newPassword;
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      username : updatedUser.username,
+      email: updatedUser.email,
+      mylink : updatedUser.mylink,
+      referral_link : updatedUser.referral_link,
+      balance : updatedUser.balance,
+      role: updatedUser.role,
+      avatar: updatedUser.avatar,
+      cycle : updatedUser.cycle,
+      state : updatedUser.state
+    });
+
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
 const upState = asyncHandler(async (req, res) => {
 
   const {email} = req.body;
@@ -405,7 +449,9 @@ export {
   mailHandler,
   remailHandler,
   updateUserProfile,
+  updateAdminUserProfile,
   upState,
   getDashboardInfo,
   deleteUser,
+  findUser,
 };
