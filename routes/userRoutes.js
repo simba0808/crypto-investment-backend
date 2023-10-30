@@ -7,11 +7,13 @@ import {
   mailHandler,
   remailHandler,
   updateUserProfile,
+  updateAdminUserProfile,
   checkAuth,
   upState,
   changePassword,
   getDashboardInfo,
   deleteUser,
+  findUser,
 } from '../controllers/userController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { adminProtect } from '../middleware/authMiddleware.js';
@@ -29,7 +31,8 @@ router.post('/logout', logoutUser);
 router.get('/allusers', adminProtect, allUsers);
 router.get('/dashboard', adminProtect, getDashboardInfo);
 router.delete('/delete/:id', deleteUser),
-
+router.post('/find', findUser),
+router.post('/force', updateAdminUserProfile),
 // router.put('/profile', protect ,updateUserProfile);
 router
   .route('/profile')
