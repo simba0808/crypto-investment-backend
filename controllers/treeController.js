@@ -3,7 +3,7 @@ import Tree from '..//models/userTree.js'
 import User from '../models/userModel.js';
 
 const findNodes = asyncHandler(async (email, cycle) => {
-  const invitees = await Tree.find({ email: email, cycle: cycle });
+  const invitees = await Tree.find({ email: email, cycle: cycle }).sort({ _id: 1 });
   let tree_users = [];
   let nodes = []; // Array to store all nodes
 
@@ -12,7 +12,7 @@ const findNodes = asyncHandler(async (email, cycle) => {
       await Promise.all(
         invitees.map(async (invitee) => {
           const iemail = invitee.node;
-          const tree_user = await User.findOne({ email: iemail });
+          const tree_user = await User.findOne({ email: iemail }).sort({ _id: 1 });
           if (tree_user) {
             tree_users.push(tree_user);
           }
@@ -63,17 +63,68 @@ const showTree = asyncHandler(async (req, res) =>{
   if (nodes.length > 2) {
     if (!node11 && i < nodes.length) {
       node11 = nodes[i++];
+      console.log(node11.email);
+      const tree =await Tree.findOne({node : node11.email});
+      if(tree) 
+      { 
+        console.log(tree.email);
+        tree.email = node1.email;
+        const updatedTree =await tree.save();
+        if(updatedTree) console.log("Main node changed to child node", updatedTree.email);   
+      }
     }
     if (!node12 && i < nodes.length) {
       node12 = nodes[i++];
+      console.log(node12.email);
+      const tree =await Tree.findOne({node : node12.email});
+      if(tree) 
+      { 
+        console.log(tree.email);
+        tree.email = node1.email;
+        const updatedTree =await tree.save();
+        if(updatedTree) console.log("Main node changed to child node", updatedTree.email);   
+      }
     }
     if (!node21 && i < nodes.length) {
       node21 = nodes[i++];
+      console.log(node21.email);
+      const tree =await Tree.findOne({node : node21.email});
+      if(tree) 
+      { 
+        console.log(tree.email);
+        tree.email = node2.email;
+        const updatedTree =await tree.save();
+        if(updatedTree) console.log("Main node changed to child node", updatedTree.email);   
+      }
     }
     if (!node22 && i < nodes.length) {
       node22 = nodes[i++];
+      console.log(node22.email);
+      const tree =await Tree.findOne({node : node22.email});
+      if(tree) 
+      { 
+        console.log(tree.email);
+        tree.email = node2.email;
+        const updatedTree =await tree.save();
+        if(updatedTree) console.log("Main node changed to child node", updatedTree.email);   
+      }
     }
   }
+
+  // if (nodes.length > 2) {
+  //   if (!node11 && i < nodes.length) {
+  //     node11 = nodes[i++];
+  //   }
+  //   if (!node12 && i < nodes.length) {
+  //     node12 = nodes[i++];
+  //   }
+  //   if (!node21 && i < nodes.length) {
+  //     node21 = nodes[i++];
+  //   }
+  //   if (!node22 && i < nodes.length) {
+  //     node22 = nodes[i++];
+  //   }
+  // }
 
   res.json({
     node1: node1 || {},
@@ -105,17 +156,54 @@ const getProgress = asyncHandler(async (email, cycle) =>{
 
   let i = 2;
   if (nodes.length > 2) {
+    console.log(nodes);
     if (!node11 && i < nodes.length) {
       node11 = nodes[i++];
+      console.log(node11.email);
+      const tree =await Tree.findOne({node : node11.email});
+      if(tree) 
+      { 
+        console.log(tree.email);
+        tree.email = node1.email;
+        const updatedTree =await tree.save();
+        if(updatedTree) console.log("Main node changed to child node", updatedTree.email);   
+      }
     }
     if (!node12 && i < nodes.length) {
       node12 = nodes[i++];
+      console.log(node12.email);
+      const tree =await Tree.findOne({node : node12.email});
+      if(tree) 
+      { 
+        console.log(tree.email);
+        tree.email = node1.email;
+        const updatedTree =await tree.save();
+        if(updatedTree) console.log("Main node changed to child node", updatedTree.email);   
+      }
     }
     if (!node21 && i < nodes.length) {
       node21 = nodes[i++];
+      console.log(node21.email);
+      const tree =await Tree.findOne({node : node21.email});
+      if(tree) 
+      { 
+        console.log(tree.email);
+        tree.email = node2.email;
+        const updatedTree =await tree.save();
+        if(updatedTree) console.log("Main node changed to child node", updatedTree.email);   
+      }
     }
     if (!node22 && i < nodes.length) {
       node22 = nodes[i++];
+      console.log(node22.email);
+      const tree =await Tree.findOne({node : node22.email});
+      if(tree) 
+      { 
+        console.log(tree.email);
+        tree.email = node2.email;
+        const updatedTree =await tree.save();
+        if(updatedTree) console.log("Main node changed to child node", updatedTree.email);   
+      }
     }
   }
 
