@@ -1,5 +1,5 @@
 import asyncHandler from 'express-async-handler';
-import Tree from '..//models/userTree.js'
+import Tree from '../models/userTree.js'
 import User from '../models/userModel.js';
 
 const findNodes = asyncHandler(async (email, cycle) => {
