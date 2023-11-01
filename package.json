@@ -10,6 +10,9 @@
     "client": "npm run dev --prefix frontend",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
+  "engines": {
+    "node": ">=14.20.1"
+  },
   "author": "",
   "license": "MIT",
   "dependencies": {
