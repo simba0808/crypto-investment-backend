@@ -399,7 +399,7 @@ const getDashboardInfo = asyncHandler(async (req, res) => {
   usersInCycle =await User.countDocuments({state : 2});
   if(usersInCycle) balanceInCycle = usersInCycle * 100;
 
-  totalUsers = await User.countDocuments();
+  totalUsers = await User.countDocuments({ role: { $ne: "admin" } });
   
   investedUsers = await User.countDocuments({ $or: [{ cycle: { $gt: 1 } }, { state: { $gt: 1 } }] });
   rewardedUsers = await User.countDocuments({ $or: [{ cycle: { $gt: 1 } }, { state: { $gt: 2 } }] });
