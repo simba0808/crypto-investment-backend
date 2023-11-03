@@ -276,16 +276,11 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   if(!referral_user) {
     res.status(404);
     throw new Error('Invalid Referral Link');
-<<<<<<< HEAD
-  } 
-=======
   } else if(referral_user.referral_link == user.mylink) {
       res.status(404);
       throw new Error('Can not add your child user');
     }
   
->>>>>>> origin/main
-
   if (user) {
     user.username = req.body.username || user.username;
     user.avatar = req.body.avatar || user.avatar;
