@@ -35,15 +35,18 @@ const findNodes = asyncHandler(async (email, cycle) => {
       console.error(err);
     }
   }
+  nodes.sort((a, b) => {
+    return new Date(a.updatedAt) - new Date(b.updatedAt);
+  });
 
   return nodes;
+  
 });
 
 
 const showTree = asyncHandler(async (req, res) =>{
   const { email, cycle } = req.body;
   
-
   let nodes= await findNodes(email, cycle);
   nodes.sort((a, b) => {
     return new Date(a.updatedAt) - new Date(b.updatedAt);
