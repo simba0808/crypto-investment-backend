@@ -98,7 +98,7 @@ const findUser = asyncHandler(async (req, res) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   const { username, email, code, password, referral_link, mylink } = req.body;
-  const userExists = await User.findOne({ email });
+  const userExists = await User.findOne({ email: { $regex: new RegExp('^' + email + '$', 'i') } });
   if (userExists) {
     res.status(400);
     throw new Error('User already exists');
@@ -172,45 +172,45 @@ const changePassword = asyncHandler(async (req, res) => {
 
 const mailHandler = async (req, res) =>{
     const { email } = req.body;
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email: { $regex: new RegExp('^' + email + '$', 'i') } });
     
 
     if (userExists) {
       res.status(400).json({message:"User already exists."})
     } else {
       
-    //  const transporter=nodemailer.createTransport({
-    //     //host: 'smtp.gmail.com',
-    //     port: 587,
-    //     secure: false, // true for 465, false for other ports
-    //     auth: {
-    //        user: 'profitteamcad@gmail.com', // your email address
-    //        pass: 'vojhaizydjtqdahe' // your email password
-    //     },
-    //     //tls: {rejectUnauthorized: false},
-    //     service:'gmail'
-    //  })
+     const transporter=nodemailer.createTransport({
+        //host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+           user: 'profitteamcad@gmail.com', // your email address
+           pass: 'vojhaizydjtqdahe' // your email password
+        },
+        //tls: {rejectUnauthorized: false},
+        service:'gmail'
+     })
 
      process.env.VERIFICATION_CODE=Math.floor(100000+Math.random()*900000);
      process.env.GENERATED_TIME=Date.now();
      res.status(200).json({message:'sent'});
      console.log(process.env.VERIFICATION_CODE);
       
-    //  const mailOptions={
-    //     from:'profitteamcad@gmail.com',
-    //     to:email,
-    //     subject:`Your verification code is ${process.env.VERIFICATION_CODE}`,
-    //     text:"code",
-    //     html:emailTemplate(email),
-    //  }
-    //  await transporter.sendMail(mailOptions,(err,info)=>{
-    //     if(err){
-    //        console.log(err)
-    //        res.status(500).json({success:false,message:"Internal Server Error"})
-    //     }else{
-    //        res.status(200).json({success:true,message:"Email sent successfully"})
-    //     }
-    //  });
+     const mailOptions={
+        from:'profitteamcad@gmail.com',
+        to:email,
+        subject:`Your verification code is ${process.env.VERIFICATION_CODE}`,
+        text:"code",
+        html:emailTemplate(email),
+     }
+     await transporter.sendMail(mailOptions,(err,info)=>{
+        if(err){
+           console.log(err)
+           res.status(500).json({success:false,message:"Internal Server Error"})
+        }else{
+           res.status(200).json({success:true,message:"Email sent successfully"})
+        }
+     });
 
   }
 };
@@ -221,40 +221,40 @@ const remailHandler = async (req, res) =>{
   console.log(forgot_email);
   if (userExists) {
 
-  // const transporter=nodemailer.createTransport({
-  //     //host: 'smtp.gmail.com',
-  //     port: 587,
-  //     secure: false, // true for 465, false for other ports
-  //     auth: {
-  //        user: 'profitteamcad@gmail.com', // your email address
-  //        pass: 'vojhaizydjtqdahe' // your email password
-  //     },
-  //     //tls: {rejectUnauthorized: false},
-  //     service:'gmail'
-  //  })
+  const transporter=nodemailer.createTransport({
+      //host: 'smtp.gmail.com',
+      port: 587,
+      secure: false, // true for 465, false for other ports
+      auth: {
+         user: 'profitteamcad@gmail.com', // your email address
+         pass: 'vojhaizydjtqdahe' // your email password
+      },
+      //tls: {rejectUnauthorized: false},
+      service:'gmail'
+   })
 
    process.env.FORGOT_CODE=Math.floor(100000+Math.random()*900000);
    process.env.GENERATED_TIME=Date.now();
    res.status(200).json({message:'sent'});
    console.log(process.env.FORGOT_CODE);
     
-  //  const mailOptions={
+   const mailOptions={
 
-  //     from:'profitteamcad@gmail.com',
-  //     to:email,
-  //     subject:`Your verification code is ${process.env.FORGOT_CODE}`,
-  //     text:"code",
-  //     html:forgotTemplate(email),
+      from:'profitteamcad@gmail.com',
+      to:email,
+      subject:`Your verification code is ${process.env.FORGOT_CODE}`,
+      text:"code",
+      html:forgotTemplate(email),
 
-  //  }
-  //  await transporter.sendMail(mailOptions,(err,info)=>{
-  //     if(err){
-  //        console.log(err)
-  //        res.status(500).json({success:false,message:"Internal Server Error"})
-  //     }else{
-  //        res.status(200).json({success:true,message:"Email sent successfully"})
-  //     }
-  //  });
+   }
+   await transporter.sendMail(mailOptions,(err,info)=>{
+      if(err){
+         console.log(err)
+         res.status(500).json({success:false,message:"Internal Server Error"})
+      }else{
+         res.status(200).json({success:true,message:"Email sent successfully"})
+      }
+   });
 
   } else {
     res.status(400).json({message:"User doesn't exist."});
@@ -271,11 +271,16 @@ const logoutUser = (req, res) => {
 const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
   const referral_link = req.body.referral_link;
-  const referral_user = await User.findOne({referral_link});
+  console.log(referral_link);
+  const referral_user = await User.findOne({mylink : referral_link});
   if(!referral_user) {
     res.status(404);
     throw new Error('Invalid Referral Link');
-  }
+  } else if(referral_user.referral_link == user.mylink) {
+      res.status(404);
+      throw new Error('Can not add your child user');
+    }
+  
 
   if (user) {
     user.username = req.body.username || user.username;
@@ -399,7 +404,7 @@ const getDashboardInfo = asyncHandler(async (req, res) => {
   usersInCycle =await User.countDocuments({state : 2});
   if(usersInCycle) balanceInCycle = usersInCycle * 100;
 
-  totalUsers = await User.countDocuments();
+  totalUsers = await User.countDocuments({ role: { $ne: "admin" } });
   
   investedUsers = await User.countDocuments({ $or: [{ cycle: { $gt: 1 } }, { state: { $gt: 1 } }] });
   rewardedUsers = await User.countDocuments({ $or: [{ cycle: { $gt: 1 } }, { state: { $gt: 2 } }] });
