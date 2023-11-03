@@ -26,6 +26,7 @@ const findNodes = asyncHandler(async (email, cycle) => {
             username: tree_user.username,
             email: tree_user.email,
             avatar: tree_user.avatar,
+            createdAt : tree_user.createdAt,
           };
           nodes.push(node);
         });
@@ -44,6 +45,9 @@ const showTree = asyncHandler(async (req, res) =>{
   
 
   let nodes= await findNodes(email, cycle);
+  nodes.sort((a, b) => {
+    return new Date(a.updatedAt) - new Date(b.updatedAt);
+  });
   let node1 = nodes[0];
   let node2 = nodes[1];
   let node11 = {};

@@ -275,7 +275,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   if(!referral_user) {
     res.status(404);
     throw new Error('Invalid Referral Link');
-  }
+  } 
 
   if (user) {
     user.username = req.body.username || user.username;
