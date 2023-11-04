@@ -26,6 +26,7 @@ const findNodes = asyncHandler(async (email, cycle) => {
             username: tree_user.username,
             email: tree_user.email,
             avatar: tree_user.avatar,
+            cycle : tree_user.cycle,
             updatedAt : tree_user.updatedAt,
           };
           nodes.push(node);
@@ -59,11 +60,11 @@ const showTree = asyncHandler(async (req, res) =>{
   let node22 = {};
   
   if (node1) {
-     [ node11, node12 ]  = await findNodes(node1.email, cycle);
+     [ node11, node12 ]  = await findNodes(node1.email, node1.cycle);
   }
   
   if (node2) {
-     [ node21, node22 ]  = await findNodes(node2.email, cycle);
+     [ node21, node22 ]  = await findNodes(node2.email, node2.cycle);
   }
 
   let i = 2;
