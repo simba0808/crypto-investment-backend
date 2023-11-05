@@ -163,6 +163,7 @@ const getRewards = asyncHandler(async (req, res) =>{
 
   if (user) {
 
+    if(user.state==3) {
     const child = await User.findOne({referral_link : user.mylink});
 
     if(child) {
@@ -200,8 +201,11 @@ const getRewards = asyncHandler(async (req, res) =>{
 
     }      
 
-  } else {
+  }  else {
     res.status(400).json({message:"You already are rewarded in other device! Refresh this page."});
+  }
+ } else {
+    res.status(400).json({message:"Can not find user!"});
   }
 
 });

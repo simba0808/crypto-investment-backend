@@ -273,18 +273,18 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   const referral_link = req.body.referral_link;
   console.log(referral_link);
   const referral_user = await User.findOne({mylink : referral_link});
-  if(!referral_user) {
+  if(!referral_user && referral_link) {
     res.status(404);
     throw new Error('Invalid Referral Link');
-  } else if(referral_user.referral_link == user.mylink) {
+  } else if(referral_user.referral_link == user.mylink && referral_link) {
       res.status(404);
       throw new Error('Can not add your child user');
-    }
+  }
   
   if (user) {
     user.username = req.body.username || user.username;
     user.avatar = req.body.avatar || user.avatar;
-    user.referral_link =req.body.referral_link || user.referral_link;
+    user.referral_link =req.body.referral_link || user.referral_link || "";
 
     if (req.body.password) {
       if(await user.matchPassword(req.body.password)) {
