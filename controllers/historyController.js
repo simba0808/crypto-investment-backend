@@ -34,7 +34,7 @@ const depositHistory = asyncHandler(async (req, res) =>{
 });
 
 const withdrawHistory = asyncHandler(async (req, res) =>{
-    const historys = await History.find({method: 'withdraw'}).sort({ createdAt: -1 });
+    const historys = await History.find({method: 'withdraw', approved:true}).sort({ createdAt: -1 });
     let withdrawHis = [];
     
     if (historys) {
