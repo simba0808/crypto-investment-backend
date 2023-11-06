@@ -119,20 +119,6 @@ const showTree = asyncHandler(async (req, res) =>{
     }
   }
 
-  // if (nodes.length > 2) {
-  //   if (!node11 && i < nodes.length) {
-  //     node11 = nodes[i++];
-  //   }
-  //   if (!node12 && i < nodes.length) {
-  //     node12 = nodes[i++];
-  //   }
-  //   if (!node21 && i < nodes.length) {
-  //     node21 = nodes[i++];
-  //   }
-  //   if (!node22 && i < nodes.length) {
-  //     node22 = nodes[i++];
-  //   }
-  // }
 
   res.json({
     node1: node1 || {},
@@ -147,6 +133,9 @@ const showTree = asyncHandler(async (req, res) =>{
 const getProgress = asyncHandler(async (email, cycle) =>{
   
   let nodes= await findNodes(email, cycle);
+  nodes.sort((a, b) => {
+    return new Date(a.updatedAt) - new Date(b.updatedAt);
+  });
   let node1 = nodes[0];
   let node2 = nodes[1];
   let node11 = {};
@@ -155,16 +144,15 @@ const getProgress = asyncHandler(async (email, cycle) =>{
   let node22 = {};
   
   if (node1) {
-     [ node11, node12 ]  = await findNodes(node1.email, cycle);
+     [ node11, node12 ]  = await findNodes(node1.email, node1.cycle);
   }
   
   if (node2) {
-     [ node21, node22 ]  = await findNodes(node2.email, cycle);
+     [ node21, node22 ]  = await findNodes(node2.email, node2.cycle);
   }
 
   let i = 2;
   if (nodes.length > 2) {
-    console.log(nodes);
     if (!node11 && i < nodes.length) {
       node11 = nodes[i++];
       console.log(node11.email);
