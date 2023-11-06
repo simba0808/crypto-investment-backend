@@ -151,7 +151,7 @@ const changePassword = asyncHandler(async (req, res) => {
         if((Date.now()-process.env.GENERATED_TIME)<process.env.VALID_DURATION){
             
           user.password = forgot_password
-          const updatedUser = user.save();
+          const updatedUser = await user.save();
 
           if (updatedUser) {
             res.status(201).json({ message: "Password Changed Successfully!"});
