@@ -26,6 +26,7 @@ const findNodes = asyncHandler(async (email, cycle) => {
             username: tree_user.username,
             email: tree_user.email,
             avatar: tree_user.avatar,
+            cycle: tree_user.cycle,
             updatedAt : tree_user.updatedAt,
           };
           nodes.push(node);
