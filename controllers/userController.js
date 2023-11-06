@@ -391,7 +391,7 @@ const getDashboardInfo = asyncHandler(async (req, res) => {
     });
   }
 
-  const withdrawDeposit = await History.find({ method : 'withdraw'});
+  const withdrawDeposit = await History.find({ method : 'withdraw', approved : true });
   if(withdrawDeposit) {
     withdrawDeposit.map((withdrawElement)=>{
       withdraw+=withdrawElement.amount;

@@ -48,9 +48,18 @@ const withdrawBalance = asyncHandler(async (req, res) =>{
 
   if (user) {
     // user.balance = user.balance - parseInt(wAmount);
+    const reqHis = await History.find({email:email, method:"withdraw", approved: false});
+    console.log(reqHis);
+    let sum = 0;
 
-    if(user.balance<parseInt(wAmount)) {
+    for (let i = 0; i < reqHis.length; i++) {
+      sum += reqHis[i].amount;
+    }
+    console.log("sum",sum);
+    if(user.balance<(parseInt(wAmount)+sum)) {
+      if(user.balance<(parseInt(wAmount))) {
       res.status(400).json({message:"Insufficiant Balance!"});
+    } else res.status(400).json({message:"Your balance is in request!"});
     } else {
 
     const history = await History.create(
