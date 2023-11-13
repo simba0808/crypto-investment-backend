@@ -72,7 +72,7 @@ const showTree = asyncHandler(async (req, res) =>{
     if (!node11 && i < nodes.length) {
       node11 = nodes[i++];
       console.log(node11.email);
-      const tree =await Tree.findOne({node : node11.email});
+      const tree =await Tree.findOne({node : node11.email}).sort({ createdAt: -1 }).limit(1);
       if(tree) 
       { 
         console.log(tree.email);
@@ -84,7 +84,7 @@ const showTree = asyncHandler(async (req, res) =>{
     if (!node12 && i < nodes.length) {
       node12 = nodes[i++];
       console.log(node12.email);
-      const tree =await Tree.findOne({node : node12.email});
+      const tree =await Tree.findOne({node : node12.email}).sort({ createdAt: -1 }).limit(1);
       if(tree) 
       { 
         console.log(tree.email);
@@ -96,7 +96,7 @@ const showTree = asyncHandler(async (req, res) =>{
     if (!node21 && i < nodes.length) {
       node21 = nodes[i++];
       console.log(node21.email);
-      const tree =await Tree.findOne({node : node21.email});
+      const tree =await Tree.findOne({node : node21.email}).sort({ createdAt: -1 }).limit(1);
       if(tree) 
       { 
         console.log(tree.email);
@@ -108,7 +108,7 @@ const showTree = asyncHandler(async (req, res) =>{
     if (!node22 && i < nodes.length) {
       node22 = nodes[i++];
       console.log(node22.email);
-      const tree =await Tree.findOne({node : node22.email});
+      const tree =await Tree.findOne({node : node22.email}).sort({ createdAt: -1 }).limit(1);
       if(tree) 
       { 
         console.log(tree.email);
@@ -156,7 +156,7 @@ const getProgress = asyncHandler(async (email, cycle) =>{
     if (!node11 && i < nodes.length) {
       node11 = nodes[i++];
       console.log(node11.email);
-      const tree =await Tree.findOne({node : node11.email});
+      const tree =await Tree.findOne({node : node11.email}).sort({ createdAt: -1 }).limit(1);
       if(tree) 
       { 
         console.log(tree.email);
@@ -168,7 +168,7 @@ const getProgress = asyncHandler(async (email, cycle) =>{
     if (!node12 && i < nodes.length) {
       node12 = nodes[i++];
       console.log(node12.email);
-      const tree =await Tree.findOne({node : node12.email});
+      const tree =await Tree.findOne({node : node12.email}).sort({ createdAt: -1 }).limit(1);
       if(tree) 
       { 
         console.log(tree.email);
@@ -180,7 +180,7 @@ const getProgress = asyncHandler(async (email, cycle) =>{
     if (!node21 && i < nodes.length) {
       node21 = nodes[i++];
       console.log(node21.email);
-      const tree =await Tree.findOne({node : node21.email});
+      const tree =await Tree.findOne({node : node21.email}).sort({ createdAt: -1 }).limit(1);
       if(tree) 
       { 
         console.log(tree.email);
@@ -192,7 +192,7 @@ const getProgress = asyncHandler(async (email, cycle) =>{
     if (!node22 && i < nodes.length) {
       node22 = nodes[i++];
       console.log(node22.email);
-      const tree =await Tree.findOne({node : node22.email});
+      const tree =await Tree.findOne({node : node22.email}).sort({ createdAt: -1 }).limit(1);
       if(tree) 
       { 
         console.log(tree.email);
