@@ -171,63 +171,52 @@ const changePassword = asyncHandler(async (req, res) => {
 });
 
 const mailHandler = async (req, res) =>{
-    const { email } = req.body;
-    const userExists = await User.findOne({ email: { $regex: new RegExp('^' + email + '$', 'i') } });
+  const { email } = req.body;
+  const userExists = await User.findOne({ email: { $regex: new RegExp('^' + email + '$', 'i') } });
+  
+
+  if (userExists) {
+    res.status(400).json({message:"User already exists."})
+  } else {
     
-
-    if (userExists) {
-      res.status(400).json({message:"User already exists."})
-    } else {
-      
-    //  const transporter=nodemailer.createTransport({
-    //     //host: 'smtp.gmail.com',
-    //     port: 587,
-    //     secure: false, // true for 465, false for other ports
-    //     auth: {
-    //        user: 'profitteamcad@gmail.com', // your email address
-    //        pass: 'vojhaizydjtqdahe' // your email password
-    //     },
-    //     //tls: {rejectUnauthorized: false},
-    //     service:'gmail'
-    //  })
-
-    const transporter=nodemailer.createTransport({
-      
-      // host: 'smtp.gmail.com',
-      port: 587,
+   const transporter=nodemailer.createTransport({
+    
+      host: 'smtp.gmail.com',
+      port: 465,
       type: "SMTP",
-      secure: false, // true for 465, false for other ports
+      secure: true, // true for 465, false for other ports
+      requireTLS: true,
       auth: {
          user: 'profitteamcad@gmail.com', // your email address
          pass: 'vojhaizydjtqdahe' // your email password
       },
       service:'gmail'
    })
+   console.log('Up to ready sending email');
+   process.env.VERIFICATION_CODE=Math.floor(100000+Math.random()*900000);
+   process.env.GENERATED_TIME=Date.now();
+   
+   console.log(process.env.VERIFICATION_CODE);
+    
+   const mailOptions={
+      from:'profitteamcad@gmail.com',
+      to:email,
+      subject:`Your verification code is ${process.env.VERIFICATION_CODE}`,
+      text:"code",
+      html:emailTemplate(email),
+   }
 
-     process.env.VERIFICATION_CODE=Math.floor(100000+Math.random()*900000);
-     process.env.GENERATED_TIME=Date.now();
-
-     console.log(process.env.VERIFICATION_CODE);
-      
-     const mailOptions={
-        from:'profitteamcad@gmail.com',
-        to:email,
-        subject:`Your verification code is ${process.env.VERIFICATION_CODE}`,
-        text:"code",
-        html:emailTemplate(email),
-     }
-
-     await transporter.sendMail(mailOptions,(err,info)=>{
+   await transporter.sendMail(mailOptions,(err,info)=>{
       if(err){
          console.log(err)
          res.status(500).json({success:false,message:"Internal Server Error"})
       }else{
          console.log('Email send sucessfully!!!!!!!', process.env.VERIFICATION_CODE);
          res.status(200).json({success:true,message:"Email sent successfully"})
-      } 
-      });
-      res.status(200).json({message:'Mail flow finished!'});
-      console.log('is it working?');
+      }
+   });
+
+   res.status(200).json({message:'sent'});
 
   }
 
