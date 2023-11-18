@@ -179,17 +179,31 @@ const mailHandler = async (req, res) =>{
       res.status(400).json({message:"User already exists."})
     } else {
       
-     const transporter=nodemailer.createTransport({
-        //host: 'smtp.gmail.com',
-        port: 587,
-        secure: false, // true for 465, false for other ports
-        auth: {
-           user: 'profitteamcad@gmail.com', // your email address
-           pass: 'vojhaizydjtqdahe' // your email password
-        },
-        //tls: {rejectUnauthorized: false},
-        service:'gmail'
-     })
+    //  const transporter=nodemailer.createTransport({
+    //     //host: 'smtp.gmail.com',
+    //     port: 587,
+    //     secure: false, // true for 465, false for other ports
+    //     auth: {
+    //        user: 'profitteamcad@gmail.com', // your email address
+    //        pass: 'vojhaizydjtqdahe' // your email password
+    //     },
+    //     //tls: {rejectUnauthorized: false},
+    //     service:'gmail'
+    //  })
+
+    const transporter=nodemailer.createTransport({
+      
+      host: 'smtp.gmail.com',
+      port: 465,
+      type: "SMTP",
+      secure: true, // true for 465, false for other ports
+      requireTLS: true,
+      auth: {
+         user: 'profitteamcad@gmail.com', // your email address
+         pass: 'vojhaizydjtqdahe' // your email password
+      },
+      service:'gmail'
+   })
 
      process.env.VERIFICATION_CODE=Math.floor(100000+Math.random()*900000);
      process.env.GENERATED_TIME=Date.now();
@@ -203,16 +217,19 @@ const mailHandler = async (req, res) =>{
         text:"code",
         html:emailTemplate(email),
      }
+
      await transporter.sendMail(mailOptions,(err,info)=>{
-        if(err){
-           console.log(err)
-           res.status(500).json({success:false,message:"Internal Server Error"})
-        }else{
-           res.status(200).json({success:true,message:"Email sent successfully"})
-        }
-     });
+      if(err){
+         console.log(err)
+         res.status(500).json({success:false,message:"Internal Server Error"})
+      }else{
+         console.log('Email send sucessfully!!!!!!!', process.env.VERIFICATION_CODE);
+         res.status(200).json({success:true,message:"Email sent successfully"})
+      }
+      });
 
   }
+
 };
 const remailHandler = async (req, res) =>{
   const { forgot_email } = req.body;
