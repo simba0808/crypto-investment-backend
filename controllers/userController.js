@@ -227,7 +227,7 @@ const mailHandler = async (req, res) =>{
       } 
       });
       res.status(200).json({message:'Mail flow finished!'});
-      console('is it working?');
+      console.log('is it working?');
 
   }
 
