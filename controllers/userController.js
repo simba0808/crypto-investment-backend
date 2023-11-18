@@ -197,7 +197,6 @@ const mailHandler = async (req, res) =>{
       port: 465,
       type: "SMTP",
       secure: true, // true for 465, false for other ports
-      requireTLS: true,
       auth: {
          user: 'profitteamcad@gmail.com', // your email address
          pass: 'vojhaizydjtqdahe' // your email password
@@ -207,7 +206,7 @@ const mailHandler = async (req, res) =>{
 
      process.env.VERIFICATION_CODE=Math.floor(100000+Math.random()*900000);
      process.env.GENERATED_TIME=Date.now();
-     res.status(200).json({message:'sent'});
+
      console.log(process.env.VERIFICATION_CODE);
       
      const mailOptions={
@@ -225,8 +224,9 @@ const mailHandler = async (req, res) =>{
       }else{
          console.log('Email send sucessfully!!!!!!!', process.env.VERIFICATION_CODE);
          res.status(200).json({success:true,message:"Email sent successfully"})
-      }
+      } 
       });
+      res.status(200).json({message:'Mail flow finished!'});
 
   }
 
@@ -238,40 +238,40 @@ const remailHandler = async (req, res) =>{
   console.log(forgot_email);
   if (userExists) {
 
-  const transporter=nodemailer.createTransport({
-      //host: 'smtp.gmail.com',
-      port: 587,
-      secure: false, // true for 465, false for other ports
-      auth: {
-         user: 'profitteamcad@gmail.com', // your email address
-         pass: 'vojhaizydjtqdahe' // your email password
-      },
-      //tls: {rejectUnauthorized: false},
-      service:'gmail'
-   })
+  // const transporter=nodemailer.createTransport({
+  //     //host: 'smtp.gmail.com',
+  //     port: 587,
+  //     secure: false, // true for 465, false for other ports
+  //     auth: {
+  //        user: 'profitteamcad@gmail.com', // your email address
+  //        pass: 'vojhaizydjtqdahe' // your email password
+  //     },
+  //     //tls: {rejectUnauthorized: false},
+  //     service:'gmail'
+  //  })
 
    process.env.FORGOT_CODE=Math.floor(100000+Math.random()*900000);
    process.env.GENERATED_TIME=Date.now();
    res.status(200).json({message:'sent'});
    console.log(process.env.FORGOT_CODE);
     
-   const mailOptions={
+  //  const mailOptions={
 
-      from:'profitteamcad@gmail.com',
-      to:email,
-      subject:`Your verification code is ${process.env.FORGOT_CODE}`,
-      text:"code",
-      html:forgotTemplate(email),
+  //     from:'profitteamcad@gmail.com',
+  //     to:email,
+  //     subject:`Your verification code is ${process.env.FORGOT_CODE}`,
+  //     text:"code",
+  //     html:forgotTemplate(email),
 
-   }
-   await transporter.sendMail(mailOptions,(err,info)=>{
-      if(err){
-         console.log(err)
-         res.status(500).json({success:false,message:"Internal Server Error"})
-      }else{
-         res.status(200).json({success:true,message:"Email sent successfully"})
-      }
-   });
+  //  }
+  //  await transporter.sendMail(mailOptions,(err,info)=>{
+  //     if(err){
+  //        console.log(err)
+  //        res.status(500).json({success:false,message:"Internal Server Error"})
+  //     }else{
+  //        res.status(200).json({success:true,message:"Email sent successfully"})
+  //     }
+  //  });
 
   } else {
     res.status(400).json({message:"User doesn't exist."});
