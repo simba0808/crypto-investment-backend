@@ -193,10 +193,10 @@ const mailHandler = async (req, res) =>{
 
     const transporter=nodemailer.createTransport({
       
-      host: 'smtp.gmail.com',
-      port: 465,
+      // host: 'smtp.gmail.com',
+      port: 587,
       type: "SMTP",
-      secure: true, // true for 465, false for other ports
+      secure: false, // true for 465, false for other ports
       auth: {
          user: 'profitteamcad@gmail.com', // your email address
          pass: 'vojhaizydjtqdahe' // your email password
@@ -227,6 +227,7 @@ const mailHandler = async (req, res) =>{
       } 
       });
       res.status(200).json({message:'Mail flow finished!'});
+      console('is it working?');
 
   }
 
