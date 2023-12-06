@@ -14,7 +14,11 @@ import {
   getDashboardInfo,
   deleteUser,
   findUser,
+  uploadAvatar,
+  getAvatar,
 } from '../controllers/userController.js';
+
+import upload from '../middleware/gridMiddleware.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { adminProtect } from '../middleware/authMiddleware.js';
 
@@ -33,6 +37,9 @@ router.get('/dashboard', adminProtect, getDashboardInfo);
 router.delete('/delete/:id', deleteUser),
 router.post('/find', findUser),
 router.post('/force', updateAdminUserProfile),
+router.post('/upload', upload.single('file') ,uploadAvatar);
+router.get('/avatar/:avatarname', getAvatar);
+
 // router.put('/profile', protect ,updateUserProfile);
 router
   .route('/profile')

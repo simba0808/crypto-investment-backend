@@ -7,6 +7,17 @@ import nodemailer from 'nodemailer'
 import emailTemplate from '../utils/emailTemplate.js';
 import forgotTemplate from '../utils/forgotTemplate.js';
 
+import Grid from 'gridfs-stream';
+import dotenv from 'dotenv';
+dotenv.config();
+import mongoose from 'mongoose';
+let gfs;
+const conn = mongoose.connection;
+conn.once('open', function() {
+  gfs = Grid(conn.db, mongoose.mongo);
+  gfs.collection('photos');
+});
+
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -174,7 +185,7 @@ const mailHandler = async (req, res) =>{
   const { email } = req.body;
   const userExists = await User.findOne({ email: { $regex: new RegExp('^' + email + '$', 'i') } });
   
-
+ 
   if (userExists) {
     res.status(400).json({message:"User already exists."})
   } else {
@@ -206,15 +217,15 @@ const mailHandler = async (req, res) =>{
       html:emailTemplate(email),
    }
 
-   await transporter.sendMail(mailOptions,(err,info)=>{
-      if(err){
-         console.log(err)
-         res.status(500).json({success:false,message:"Internal Server Error"})
-      }else{
-         console.log('Email send sucessfully!!!!!!!', process.env.VERIFICATION_CODE);
-         res.status(200).json({success:true,message:"Email sent successfully"})
-      }
-   });
+  //  await transporter.sendMail(mailOptions,(err,info)=>{
+  //     if(err){
+  //        console.log(err)
+  //        res.status(500).json({success:false,message:"Internal Server Error"})
+  //     }else{
+  //        console.log('Email send sucessfully!!!!!!!', process.env.VERIFICATION_CODE);
+  //        res.status(200).json({success:true,message:"Email sent successfully"})
+  //     }
+  //  });
 
    res.status(200).json({message:'sent'});
 
@@ -450,6 +461,29 @@ const deleteUser = asyncHandler(async(req, res) => {
   }
 });
 
+const uploadAvatar = asyncHandler(async (req, res) => {
+  console.log("LLLLLLLLLLLLLLLLLLLLLLLLLL");
+  if(req.file === undefined) {
+    return res.send('you must select a file.');
+  }
+  res.send({
+    message: "uploaded",
+    id: req.file.id,
+    name: req.file.name,
+    contentType: req.file.contentType,
+  })
+});
+
+const getAvatar = asyncHandler(async (req, res) => {
+  try {
+    const file = await gfs.files.findOne({ filename: req.params.filename });
+    const readStream = gfs.createReadStream(file.filename);
+    readStream.pipe(res);
+  } catch (error) {
+    res.send('not found');
+  }
+})
+
 export {
   checkAuth,
   authUser,
@@ -465,4 +499,6 @@ export {
   getDashboardInfo,
   deleteUser,
   findUser,
+  uploadAvatar,
+  getAvatar,
 };
