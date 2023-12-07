@@ -38,7 +38,7 @@ router.delete('/delete/:id', deleteUser),
 router.post('/find', findUser),
 router.post('/force', updateAdminUserProfile),
 router.post('/upload', upload.single('file') ,uploadAvatar);
-router.get('/avatar/:avatarname', getAvatar);
+router.get('/avatar/:filename', getAvatar);
 
 // router.put('/profile', protect ,updateUserProfile);
 router
