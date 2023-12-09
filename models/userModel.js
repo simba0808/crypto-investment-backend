@@ -45,7 +45,12 @@ const userSchema = mongoose.Schema(
     state: {
       type: Number,
       default: 1,
-    }
+    },
+    sub_partner_id: {
+      type: String,
+      required: true,
+      default: ""
+    },
 
     // googleId: {
     //   type:String,
