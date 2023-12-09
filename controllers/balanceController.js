@@ -3,13 +3,16 @@ import User from '../models/userModel.js';
 import Tree from '../models/userTree.js';
 import History from '../models/historyModel.js'
 import { showBalance } from './historyController.js';
+import axios from 'axios';
 
 const depositBalance = asyncHandler(async (req, res) =>{
   const { email, dAmount } = req.body;
   const user = await User.findOne({ email });
 
   if (user) {
-
+    const token = await getPayAuthToken();
+    const deposit_result = await deposit_payment(token, user.sub_partner_id, dAmount);
+    console.log(deposit_result);
     const history = await History.create(
       {
        email : email, 
@@ -34,6 +37,7 @@ const depositBalance = asyncHandler(async (req, res) =>{
       avatar: updatedUser.avatar,
       cycle : updatedUser.cycle,
       state : updatedUser.state,
+      sub_partner_id : updatedUser.sub_partner_id,
     });
 
   } else {
@@ -48,6 +52,9 @@ const withdrawBalance = asyncHandler(async (req, res) =>{
 
   if (user) {
     // user.balance = user.balance - parseInt(wAmount);
+    const token = await getPayAuthToken();
+    const withdraw_result = await withdraw_payment(token, user.sub_partner_id, wAmount);
+    console.log(withdraw_result);
     const reqHis = await History.find({email:email, method:"withdraw", approved: false});
     console.log(reqHis);
     let sum = 0;
@@ -82,6 +89,7 @@ const withdrawBalance = asyncHandler(async (req, res) =>{
       avatar: user.avatar,
       cycle : user.cycle,
       state : user.state,
+      sub_partner_id : user.sub_partner_id,
     });
   }
   } else {
@@ -219,10 +227,81 @@ const getRewards = asyncHandler(async (req, res) =>{
 
 });
 
+const getPayAuthToken = async () => {
+  const authInfo = {
+    email: process.env.NOWPAY_EMAIL,
+    password: process.env.NOWPAY_PASSWORD
+  };
+
+  try{
+    const response = await axios.post(process.env.NOWPAY_SERVER+"/auth", authInfo);
+    const token = response.data.token;
+    return token;
+  } catch (err) {
+    res.status(401);
+    console.log(err)
+    throw new Error('Payment auth Error.');
+  };
+}
+
+const create_sub_partner = async (token, sub_name) => {
+
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  //axios.defaults.headers['x-api-key'] = process.env.NOWPAY_API_KEY;
+  try {
+    const response = await axios.post(process.env.NOWPAY_SERVER+'/sub-partner/balance', {
+      name: sub_name
+    });
+    const sub_id = response.data.result.id;
+    return sub_id;
+  } catch ( err ) {
+    console.log(err)
+    throw new Error('Payment server error. Could not create sub-partner.');
+  }
+};
+
+const deposit_payment = async (token, sub_id, pay_amount) => {
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  axios.defaults.headers['x-api-key'] = process.env.NOWPAY_API_KEY;
+  //const response = await axios.get('https://api-sandbox.nowpayments.io/v1/currencies');
+  
+  const pay_info = {
+    "currency": "usdtbsc",
+    "amount": pay_amount,
+    "sub_partner_id": sub_id,
+  };
+  try {
+    const response = await axios.post(process.env.NOWPAY_SERVER+'/sub-partner/payment', pay_info);
+    return response.data;
+  } catch ( err ) {
+    console.log(err);
+    throw new Error('Payment server error. Could not deposit from sub-partner.')
+  }
+}
+
+const withdraw_payment = async (token, sub_id, withdraw_amount) => {
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  //axios.defaults.headers['x-api-key'] = process.env.NOWPAY_API_KEY;
+
+  const with_info = {
+    "currency": "usdtbsc",
+    "amount": withdraw_amount,
+    "sub_partner_id": sub_id,
+  };
+  try {
+    const response = await axios.post(process.env.NOWPAY_SERVER+'/sub-partner/write-off', with_info);
+    return response.data;
+  } catch ( err ) {
+    console.log(err);
+    throw new Error('Payment server error. Could not withdraw to sub-partner.')
+  }
+}
+
 export {
   getRewards,
   getStarted,
   depositBalance,
   withdrawBalance,
   approveBalance,
+  create_sub_partner
 };

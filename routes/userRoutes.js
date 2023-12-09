@@ -21,11 +21,12 @@ import {
 import upload from '../middleware/gridMiddleware.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { adminProtect } from '../middleware/authMiddleware.js';
+import { getPayAuthToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 router.get('/', checkAuth);
-router.post('/register', registerUser);
+router.post('/register', getPayAuthToken, registerUser);
 router.post('/password', changePassword);
 router.post('/mail', mailHandler);
 router.post('/remail', remailHandler);

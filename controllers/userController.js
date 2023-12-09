@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer'
 import emailTemplate from '../utils/emailTemplate.js';
 import forgotTemplate from '../utils/forgotTemplate.js';
+import { create_sub_partner } from './balanceController.js';
 
 import Grid from 'gridfs-stream';
 import { GridFSBucket, MongoClient } from 'mongodb';
@@ -114,7 +115,10 @@ const findUser = asyncHandler(async (req, res) => {
 });
 
 const registerUser = asyncHandler(async (req, res) => {
+
   const { username, email, code, password, referral_link, mylink } = req.body;
+  const sub_partner_id = await create_sub_partner(req.token, email.split('@')[0]);
+  
   const userExists = await User.findOne({ email: { $regex: new RegExp('^' + email + '$', 'i') } });
   if (userExists) {
     res.status(400);
@@ -124,12 +128,14 @@ const registerUser = asyncHandler(async (req, res) => {
   console.log(process.env.VERIFICATION_CODE);
   if (code == process.env.VERIFICATION_CODE) {
     if (Date.now() - process.env.GENERATED_TIME < process.env.VALID_DURATION) {
+      console.log("<><>   "+sub_partner_id)
       const user = await User.create({
         username,
         email,
         password,
         mylink,
         referral_link,
+        sub_partner_id,
       });
       if (user) {
         generateToken(res, user._id, user.role);
@@ -323,7 +329,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     }
 
     const updatedUser = await user.save();
-
+    
     res.json({
       _id: updatedUser._id,
       username: updatedUser.username,
@@ -334,7 +340,8 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       role: updatedUser.role,
       avatar: updatedUser.avatar,
       cycle: updatedUser.cycle,
-      state: updatedUser.state
+      state: updatedUser.state,
+      sub_partner_id: updatedUser.sub_partner_id,
     });
   } else {
     res.status(404);
