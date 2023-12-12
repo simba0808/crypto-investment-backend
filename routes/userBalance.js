@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  generateInvoice,
   depositBalance,
   getRewards,
   getStarted,
@@ -9,7 +10,7 @@ import {
 import { protect, adminProtect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
-
+router.put('/invoice', protect, generateInvoice);
 router.put('/deposit', protect, depositBalance);
 router.put('/withdraw', protect, withdrawBalance);
 router.put('/rewards', protect, getRewards);
