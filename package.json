@@ -30,6 +30,7 @@
     "multer": "^1.4.5-lts.1",
     "multer-gridfs-storage": "^5.0.2",
     "nodemailer": "^6.9.6",
+    "speakeasy": "^2.0.0",
     "yarn": "^1.22.21"
   },
   "devDependencies": {
