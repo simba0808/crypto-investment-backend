@@ -3,7 +3,6 @@ import User from '../models/userModel.js';
 import Tree from '../models/userTree.js';
 import History from '../models/historyModel.js';
 import Invoice from '../models/invoiceModel.js';
-import History from '../models/historyModel.js'
 import { showBalance } from './historyController.js';
 import axios from 'axios';
 import speakeasy from 'speakeasy';
@@ -296,15 +295,11 @@ const generateInvoice = asyncHandler(async (req, res) => {
 
     try {
       const response = await axios.post(process.env.NOWPAY_SERVER + '/sub-partner/payment', pay_info);
-<<<<<<< HEAD
       console.log(response.data.result);
       const invoice = await Invoice.create({
         sub_partner_id: user.sub_partner_id,
         invoice_id: response.data.result.invoice_id,
       });
-
-=======
->>>>>>> origin/main
       res.status(200).send(response.data.result);
     } catch (err) {
       console.log(err);
