@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
-  origin: 'https://investworld.vercel.app',
+  origin: ['https://investworld.vercel.app', 'http://localhost:3000'],
   optionsSuccessStatus: 200,
 }));
 
